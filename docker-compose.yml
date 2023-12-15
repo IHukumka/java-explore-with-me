@@ -35,6 +35,7 @@ services:
      - "8081:8081"
     depends_on:
      - ewm-db
+     - stats-server
     environment:
       - MAIN_DB=jdbc:postgresql://postgres-main-db:5432/ewm_db
       - MAIN_USER=root

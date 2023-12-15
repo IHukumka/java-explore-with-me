@@ -38,8 +38,8 @@ public class StatsController {
     @GetMapping(value = "/stats")
     @ResponseBody
 	public ResponseEntity<Object> getAll(
-			@RequestParam(required = true) String start,
-			@RequestParam(required = true) String end,
+			@RequestParam String start,
+			@RequestParam String end,
 			@RequestParam(defaultValue = "") List<String> uris,
 			@RequestParam(defaultValue = "false") boolean unique) {
 		log.info("Получен запрос к эндпоинту: 'GET_STATS'. ");
