@@ -1,51 +1,50 @@
 version: '3.1'
+
 services:
 
   stats-server:
     build: stats-service/server
-    image: stats-service
-    container_name: stats-service
+    image: stats-service-image
+    container_name: stats-service-container
     ports:
       - "9090:9090"
-      - "9091:9091"
     depends_on:
-      - stats_service-db
+      - stats-db
     environment:
-    - STAT_URL_DB=jdbc:postgresql://state_server-db:5432/stat_db
-    - STAT_USERNAME_DB=root
+      - spring_datasource_url=jdbc:postgresql://stats-db:5432/stats-server-db
+      - spring.datasource.user=root
+      - spring.datasource.password=root
 
-
-  stats_service-db:
-    image: postgres:13.7-alpine
-    container_name: stat_server-db
+  stats-db:
+    image: postgres:14.3-alpine
+    container_name: stats-db-container
     ports:
-    - "6565:5432"
+      - "6541:5432"
     environment:
-    - POSTGRES_DB=stat_db
-    - POSTGRES_USER=root
-    - POSTGRES_HOST_AUTH_METHOD=trust
-
+      - POSTGRES_DB=stats-server-db
+      - POSTGRES_USER=root
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
   ewm-service:
     build: ewm-service
-    image: ewm-service
-    container_name: ewm-service
+    image: ewm-service-image
+    container_name: ewm-service-container
     ports:
-     - "8080:8080"
-     - "8081:8081"
+      - "8080:8080"
     depends_on:
-     - ewm-db
-     - stats-server
+      - ewm-db
     environment:
-      - MAIN_DB=jdbc:postgresql://postgres-main-db:5432/ewm_db
-      - MAIN_USER=root
+      - spring_datasource_url=jdbc:postgresql://ewm-db:5432/ewm-server-db
+      - stats-server.url=http://stats-server:9090
+      - spring.datasource.user=root
+      - spring.datasource.password=root
 
   ewm-db:
-    image: postgres:13.7-alpine
-    container_name: ewm_main-db
+    image: postgres:14.3-alpine
+    container_name: ewm-db-container
     ports:
-     - "6464:5432"
+      - "6542:5432"
     environment:
-      - POSTGRES_DB=ewm_db
+      - POSTGRES_DB=ewm-server-db
       - POSTGRES_USER=root
       - POSTGRES_HOST_AUTH_METHOD=trust
