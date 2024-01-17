@@ -1,42 +1,35 @@
 package ru.practicum.model;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "hits", schema = "public")
-@Setter
-@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Hit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EqualsAndHashCode.Include
+    Long id;
 
     @Column(name = "app", nullable = false)
-    private String app;
+    String app;
 
     @Column(name = "uri", nullable = false)
-    private String uri;
+    String uri;
 
     @Column(name = "ip", nullable = false)
-    private String ip;
+    String ip;
 
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    @Column(name = "time_stamp", nullable = false)
+    LocalDateTime timestamp;
 }

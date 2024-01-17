@@ -1,36 +1,35 @@
 package ru.practicum.dto;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import static ru.practicum.util.Util.DATE_FORMAT;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class HitDto {
 
-    private Long id;
+    Long id;
+
+    @NotBlank(message = "app cannot be empty and consist only of spaces.")
+    String app;
+
+    @NotBlank(message = "uri cannot be empty and consist only of spaces.")
+    String uri;
+
+    @NotBlank(message = "ip cannot be empty and consist only of spaces.")
+    String ip;
 
     @NotNull
-    @NotBlank
-    @Size(max = 50)
-    private String app;
-
-    @NotNull
-    @NotBlank
-    @Size(max = 255)
-    private String uri;
-
-    @NotNull
-    @NotBlank
-    @Size(max = 15)
-    private String ip;
-
-    @NotNull
-    @NotBlank
-    private String timestamp;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
+    LocalDateTime timestamp;
 }

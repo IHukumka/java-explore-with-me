@@ -1,29 +1,42 @@
 package ru.practicum.model;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import ru.practicum.dto.HitDto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HitMapper {
 
-	public static HitDto toDto(Hit hit) {
-		return HitDto.builder()
-				.id(hit.getId())
-				.app(hit.getApp())
-				.ip(hit.getIp())
-				.uri(hit.getUri())
-				.timestamp(hit.getTimestamp().toString())
-				.build();
-	}
+    public static HitDto returnHitDto(Hit hit) {
 
-	public static Hit toHit(HitDto hitDto) {
-		return Hit.builder()
-				.app(hitDto.getApp())
-				.ip(hitDto.getIp())
-				.uri(hitDto.getUri())
-				.timestamp(LocalDateTime.parse(hitDto.getTimestamp(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.build();
-	}
+        HitDto hitDto = HitDto.builder()
+                .id(hit.getId())
+                .app(hit.getApp())
+                .uri(hit.getUri())
+                .ip(hit.getIp())
+                .timestamp(hit.getTimestamp())
+                .build();
+        return hitDto;
+    }
+
+    public static Hit returnHit(HitDto hitDto) {
+
+        Hit hit = Hit.builder()
+                .id(hitDto.getId())
+                .app(hitDto.getApp())
+                .uri(hitDto.getUri())
+                .ip(hitDto.getIp())
+                .timestamp(hitDto.getTimestamp())
+                .build();
+        return hit;
+    }
+
+    public static List<HitDto> returnHitDtoList(Iterable<Hit> hits) {
+        List<HitDto> result = new ArrayList<>();
+
+        for (Hit hit : hits) {
+            result.add(returnHitDto(hit));
+        }
+        return result;
+    }
 }
