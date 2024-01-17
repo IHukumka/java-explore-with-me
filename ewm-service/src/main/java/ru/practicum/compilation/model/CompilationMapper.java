@@ -1,14 +1,14 @@
 package ru.practicum.compilation.model;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import lombok.experimental.UtilityClass;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.EventMapper;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @UtilityClass
 public class CompilationMapper {
@@ -17,10 +17,8 @@ public class CompilationMapper {
 
         List<EventShortDto> eventShortDtoList = EventMapper.returnEventShortDtoList(compilation.getEvents());
 
-        Set<EventShortDto> eventShortDtoSet = new HashSet<>();
-        for (EventShortDto shortDto : eventShortDtoList) {
-            eventShortDtoSet.add(shortDto);
-        }
+        Set<EventShortDto> eventShortDtoSet = new HashSet<>(eventShortDtoList);
+
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .pinned(compilation.getPinned())

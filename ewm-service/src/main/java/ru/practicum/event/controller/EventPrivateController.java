@@ -52,7 +52,7 @@ public class EventPrivateController {
                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                     @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
-        log.info("Список событий пользователя id {}", userId, from, size);
+        log.info("Список событий пользователя id {}", userId);
         return eventService.getAllEventsByUserId(userId, from, size);
     }
 
@@ -90,7 +90,7 @@ public class EventPrivateController {
                                                                           @PathVariable Long eventId,
                                                                           @RequestBody RequestUpdateDtoRequest requestDto) {
 
-        log.info("Обновить статус всех запросов к событию id{}.", eventId,  userId);
+        log.info("Обновить статус всех запросов к событию id{}.", eventId);
         return eventService.updateStatusRequestsForEventIdByUserId(requestDto, userId, eventId);
     }
 }

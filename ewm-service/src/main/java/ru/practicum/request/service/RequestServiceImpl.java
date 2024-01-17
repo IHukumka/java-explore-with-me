@@ -38,7 +38,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = unionService.getEventOrNotFound(eventId);
 
         if (event.getParticipantLimit() <= event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
-            throw new ConflictException(String.format("Превышен лимит запросов"));
+            throw new ConflictException("Превышен лимит запросов");
         }
 
         if (event.getInitiator().getId().equals(userId)) {
@@ -46,7 +46,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         if (requestStorage.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
-            throw new ConflictException(String.format("Повторный запрос не допускается", event.getTitle()));
+            throw new ConflictException("Повторный запрос не допускается");
         }
 
         if (event.getState() != State.PUBLISHED) {

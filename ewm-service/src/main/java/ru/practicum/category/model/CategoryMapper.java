@@ -1,27 +1,25 @@
 package ru.practicum.category.model;
 
-import lombok.experimental.UtilityClass;
-import ru.practicum.category.dto.CategoryDto;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.experimental.UtilityClass;
+import ru.practicum.category.dto.CategoryDto;
 
 @UtilityClass
 public class CategoryMapper {
     public CategoryDto returnCategoryDto(Category category) {
-        CategoryDto categoryDto = CategoryDto.builder()
+        return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .build();
-        return categoryDto;
     }
 
     public Category returnCategory(CategoryDto categoryDto) {
-        Category category = Category.builder()
+    	return Category.builder()
                 .id(categoryDto.getId())
                 .name(categoryDto.getName())
                 .build();
-        return category;
     }
 
     public List<CategoryDto> returnCategoryDtoList(Iterable<Category> categories) {

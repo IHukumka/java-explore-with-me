@@ -1,11 +1,15 @@
 package ru.practicum.compilation.service;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.compilation.dto.CompilationUpdateDto;
@@ -14,10 +18,6 @@ import ru.practicum.compilation.model.CompilationMapper;
 import ru.practicum.compilation.storage.CompilationStorage;
 import ru.practicum.event.storage.EventStorage;
 import ru.practicum.util.UnionService;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -88,9 +88,9 @@ public class CompilationServiceImpl implements CompilationService {
         List<Compilation> compilations;
 
         if (pinned) {
-            compilations = compilationStorage.findByPinned(pinned, pageRequest);
+            compilations = compilationStorage.findByPinned(true, pageRequest);
         } else {
-            compilations = compilationStorage.findAll(pageRequest).getContent();;
+            compilations = compilationStorage.findAll(pageRequest).getContent();
         }
         return new ArrayList<>(CompilationMapper.returnCompilationDtoSet(compilations));
     }

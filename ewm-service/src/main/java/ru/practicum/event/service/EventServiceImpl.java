@@ -6,7 +6,10 @@ import static ru.practicum.util.enums.State.PUBLISHED;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -102,10 +105,10 @@ public class EventServiceImpl implements EventService {
         Event event = unionService.getEventOrNotFound(eventId);
 
         if (!user.getId().equals(event.getInitiator().getId())) {
-            throw new ConflictException(String.format("Пользователь %s не имеет доступа к событию id %s.",userId, eventId));
+            throw new ConflictException(String.format("Пользователь id %s не имеет доступа к событию id %s.",userId, eventId));
         }
         if (event.getState().equals(PUBLISHED)) {
-            throw new ConflictException(String.format("Пользователь %s не может обновить событие %s, т.к. оно уже опубликовано.",userId, eventId));
+            throw new ConflictException(String.format("Пользователь id %s не может обновить событие %s, т.к. оно уже опубликовано.",userId, eventId));
         }
 
         Event updateEvent = baseUpdateEvent(event, eventUpdateDto);
@@ -120,7 +123,7 @@ public class EventServiceImpl implements EventService {
         Event event = unionService.getEventOrNotFound(eventId);
 
         if (!user.getId().equals(event.getInitiator().getId())) {
-            throw new ConflictException(String.format("Пользователь %s не имеет доступа к событию id %s.",userId, eventId));
+            throw new ConflictException(String.format("Пользователь id %s не имеет доступа к событию id %s.",userId, eventId));
         }
 
         List<Request> requests = requestStorage.findByEventId(eventId);
@@ -244,7 +247,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = unionService.getEventOrNotFound(eventId);
         if (!event.getState().equals(PUBLISHED)) {
-           throw new NotFoundException(Event.class, String.format("Событие не опубликовано", eventId));
+           throw new NotFoundException(Event.class, String.format("Событие не опубликовано"));
         }
 
         sendInfo(uri, ip);
@@ -270,12 +273,45 @@ public class EventServiceImpl implements EventService {
         List<Event> events = eventStorage.findEventsByPublicFromParam(text, categories, paid, startTime, endTime, onlyAvailable, sort, pageRequest);
 
         sendInfo(uri, ip);
+
+        Map<Long, Long> statsMap = getViewsAllEvents(events);
+
         for (Event event : events) {
-            event.setViews(getViewsEventById(event.getId()));
-            eventStorage.save(event);
+            Long viewsFromMap = statsMap.getOrDefault(event.getId(), 0L);
+            event.setViews(viewsFromMap);
         }
 
         return EventMapper.returnEventShortDtoList(events);
+    }
+
+    private Map<Long, Long> getViewsAllEvents(List<Event> events) {
+        List<String> uris = events.stream()
+                .map(event -> String.format("/events/%s", event.getId()))
+                .collect(Collectors.toList());
+
+        List<LocalDateTime> startDates = events.stream()
+                .map(Event::getCreatedOn)
+                .collect(Collectors.toList());
+        LocalDateTime earliestDate = startDates.stream()
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        Map<Long, Long> statsMap = new HashMap<>();
+
+        if (earliestDate != null) {
+            ResponseEntity<Object> response = client.findStats(earliestDate, LocalDateTime.now(),
+                    uris.toString(), true);
+
+            List<StatsDto> viewStatsList = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
+            });
+
+            statsMap = viewStatsList.stream()
+                    .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
+                    .collect(Collectors.toMap(
+                            statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())),
+                            StatsDto::getHits
+                    ));
+        }
+        return statsMap;
     }
 
     private Event baseUpdateEvent(Event event, EventUpdateDto eventUpdateDto) {
